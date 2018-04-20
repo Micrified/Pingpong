@@ -19,8 +19,8 @@ int main (void) {
 	}
 
 	while (parseNext(&pm) == 1) {
-		printf("startAddress = %llu\n", pm.startAddress);
-		printf("endAddress = %llu\n", pm.endAddress);
+		printf("startAddress = %p\n", pm.startAddress);
+		printf("endAddress = %p\n", pm.endAddress);
 		printf("offset = %llu\n", pm.offset);
 		printf("perms = %s\n", pm.perms);
 		printf("devMajor = %d\n",pm.devMajor);

@@ -7,7 +7,7 @@
 #define FMT_PATH		"/proc/%d/maps"
 
 // Format string for /proc/<pid>/maps. Excludes filepath.
-#define FMT_PROC		"%llx-%llx %4s %llx %x:%x %d"
+#define FMT_PROC		"%" SCNxPTR "-%" SCNxPTR "%4s %llx %x:%x %d"
 
 // Format string for filepath in /proc/<pid>/maps.
 #define FMT_FILE		"%*[ \t]%1023[^\n]%c"
@@ -19,7 +19,7 @@
 */
 
 // File pointer.
-FILE *fp;
+//FILE *fp;
 
 // Path buffer.
 char b[MAX_PATH];
@@ -38,6 +38,7 @@ char perms[5], *p = perms;
 
 // Parse next line of map file. Set struct variables. Return zero on failure.
 int parseNext (ProcMap *pm) {
+	uintptr_t startAddress, endAddress;
 	char n;
 
 	// Verify file is open and pm is non-NULL.
@@ -47,7 +48,7 @@ int parseNext (ProcMap *pm) {
 	}
 
 	// Verify parse success.
-	if (fscanf(fp, FMT_PROC, &(pm->startAddress), &(pm->endAddress), 
+	if (fscanf(fp, FMT_PROC, &startAddress, &endAddress, 
 		(pm->perms = p), &(pm->offset), &(pm->devMajor), &(pm->devMinor), 
 		&(pm->inode)) != 7) {
 		return 0;
@@ -58,7 +59,9 @@ int parseNext (ProcMap *pm) {
 		b[0] = '\0';
 	}
 
-	// Set path pointer.
+	// Set addresses, and path pointer.
+	pm->startAddress = (void *)startAddress;
+	pm->endAddress = (void *)endAddress;
 	pm->filePath = b;
 
 	return 1;
